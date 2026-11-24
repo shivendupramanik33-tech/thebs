@@ -120,6 +120,9 @@ nav button,nav a.lb{min-height:44px}summary{min-height:44px;align-items:center}.
 .bell{margin:14px 0}.bell svg{width:100%;max-width:380px;background:#DAD5C8;border:3px solid var(--k);border-radius:14px;display:block}.bell figcaption{font-weight:700;font-size:15px;margin-top:6px}
 #rt{margin:0 0 18px}
 @media(max-width:640px){section{padding:56px 0}.card{padding:20px}.hero p{font-size:18px}}
+.art.sl{position:relative;display:block}.art.sl img{position:absolute;inset:0;opacity:0;transform:none;transition:opacity .8s ease}.art.sl img.on{opacity:1}
+.card:hover .art.sl img{transform:scale(1.04)}.dots{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:6px;z-index:2}.dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.7);border:1.5px solid #0a0a0a}.dots i.on{background:#E6FF00}
+@media(prefers-reduced-motion:reduce){.art.sl img{transition:none}}
 </style></head><body>
 <div id="load" role="status"><div><img data-logo alt="BOOLEEAN" style="width:min(320px,70vw)"><p id="lt">Convincing the rock to show up…</p></div></div>
 <nav><div class="w"><a class="lg" href="#" aria-label="BOOLEEAN home"><img data-logo alt="BOOLEEAN"></a><a class="l" href="#shop">Nonsense</a><a class="l" href="#reviews">Regrets</a><a class="l" href="#faq">FAQ</a><a class="lb" href="login.html">Login</a><button id="cb" aria-label="Open cart">Cart (<span id="cn">0</span>)</button></div></nav>
@@ -202,7 +205,7 @@ const L=["Convincing the rock to show up…","Polishing things nobody asked for�
 addEventListener("load",()=>setTimeout(()=>{$("#load").style.opacity=0;setTimeout(()=>$("#load").remove(),500);clearInterval(lt)},1200));
 E("#mq",("EMOTIONAL SUPPORT ROCKS ★ JOKE CERTIFICATES ★ NO REFUNDS ON FEELINGS (SEE POLICY) ★ ABSOLUTELY UNNECESSARY ★ ").repeat(8));
 // products
-const IMG={rock00:"rock",otc01:"overthinker",idea99:"manual",avg06:"average",cbr05:"breathing"};/* photo file names in /img stay unchanged */
+const IMG={rock00:"rock",otc01:"overthinker",idea99:"manual",avg06:"average",cbr05:"breathing",rc04:"roast"};/* photo file names in /img stay unchanged */
 const BG={rock00:"#E6FF00",otc01:"#C9B8FF",cbr05:"#B8F2D0",avg06:"#DAD5C8",idea99:"#FF5CAA",rpp03:"#E6FF00",rc04:"#ffb199"};
 const doc=(t,u,c)=>`<svg viewBox="0 0 160 110"><rect x="30" y="8" width="100" height="94" rx="6" fill="#fff8e7" stroke="#0a0a0a" stroke-width="4"/><rect x="40" y="18" width="80" height="8" rx="3" fill="${c}"/><text x="80" y="50" text-anchor="middle" font-family="Bowlby One" font-size="14">${t}</text><text x="80" y="66" text-anchor="middle" font-size="9" font-family="Space Grotesk" font-weight="700">${u}</text><path d="M46 88h34M92 88h20" stroke="#0a0a0a" stroke-width="3"/><circle cx="124" cy="92" r="12" fill="${c}" stroke="#0a0a0a" stroke-width="3"/></svg>`;
 const PH={rock00:"The Emotional Support Rock in kraft paper with the BOOLEEAN logo",otc01:"A Certified Overthinker certificate held in two hands",idea99:"The printed booklet cover of 99 Stupidly Funny Things to Sell Online"};
@@ -211,7 +214,15 @@ const AVGART=`<svg viewBox="0 0 160 110"><rect x="30" y="6" width="100" height="
 const art=id=>({rock00:`<svg viewBox="0 0 160 110"><ellipse cx="80" cy="102" rx="50" ry="6" fill="rgba(0,0,0,.25)"/><path d="M22 90C12 60 28 26 68 16c36-8 72 10 82 46 8 26-5 40-30 42-36 4-80 0-98-14z" fill="#9a968c" stroke="#0a0a0a" stroke-width="4"/><circle cx="60" cy="62" r="11" fill="#fff" stroke="#0a0a0a" stroke-width="3"/><circle cx="102" cy="62" r="11" fill="#fff" stroke="#0a0a0a" stroke-width="3"/><circle cx="62" cy="63" r="5" fill="#0a0a0a"/><circle cx="104" cy="63" r="5" fill="#0a0a0a"/><path d="M68 82q13 10 26 0" stroke="#0a0a0a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M80 18v-8" stroke="#0a0a0a" stroke-width="3"/><path d="M80 12c-4-9-14-10-18-7 3 8 11 10 18 7zM80 12c4-9 14-10 18-7-3 8-11 10-18 7z" fill="#37d67a" stroke="#0a0a0a" stroke-width="2.5"/></svg>`,
 otc01:doc("CERTIFIED","OVERTHINKER","#E6FF00"),cbr05:doc("BREATHING","CERTIFICATE","#37D67A"),avg06:AVGART,rpp03:doc("PARKING","ROCKS ONLY","#FF5CAA"),rc04:doc("ROAST","CERTIFICATE","#FF3B30"),
 idea99:`<svg viewBox="0 0 160 110"><rect x="42" y="8" width="84" height="96" rx="6" fill="#1F3BFF" stroke="#0a0a0a" stroke-width="4"/><rect x="42" y="8" width="12" height="96" fill="#0a0a0a"/><text x="92" y="42" text-anchor="middle" font-family="Bowlby One" font-size="22" fill="#E6FF00">99</text><text x="92" y="60" text-anchor="middle" font-family="Bowlby One" font-size="8" fill="#fff">STUPIDLY FUNNY</text><text x="92" y="72" text-anchor="middle" font-family="Bowlby One" font-size="8" fill="#fff">THINGS TO SELL</text></svg>`})[id];
-function probe(){Object.keys(IMG).filter(k=>!PH[k]).forEach(k=>{const im=new Image();im.onload=()=>document.querySelectorAll('[data-pid="'+k+'"]').forEach(a=>{a.innerHTML='<img src="'+im.src+'" alt="" loading="lazy">'});im.src="img/"+IMG[k]+"-1.jpg"})}
+const REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;let SLT=[];
+/* Auto-sliding photos: each card shows every photo it has in /img (name-1.jpg, name-2.jpg, name-3.jpg), one after another. */
+function mkSlides(a,src,k,idx){const nm=(P.find(x=>x.id===k)||{}).n||"";
+ a.classList.add("sl");a.innerHTML=src.map((u,i)=>`<img class="${i?"":"on"}" src="${u}" alt="${nm} photo ${i+1}" loading="lazy">`).join("")+(src.length>1?`<span class="dots" aria-hidden="true">${src.map((u,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span>`:"");
+ if(src.length<2||REDUCED)return;let i=0;const imgs=a.querySelectorAll("img"),dots=a.querySelectorAll(".dots i");
+ const t0=setTimeout(()=>{const t=setInterval(()=>{if(document.hidden)return;imgs[i].classList.remove("on");dots[i].classList.remove("on");i=(i+1)%imgs.length;imgs[i].classList.add("on");dots[i].classList.add("on")},3200);SLT.push(t)},900+idx*700);SLT.push(t0)}
+function probe(){SLT.forEach(t=>{clearTimeout(t);clearInterval(t)});SLT=[];let idx=0;
+ Object.keys(IMG).forEach(k=>{const arts=[...document.querySelectorAll('[data-pid="'+k+'"]')];if(!arts.length)return;const my=idx++;
+  Promise.all([1,2,3].map(n=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.src);im.onerror=()=>r(null);im.src="img/"+IMG[k]+"-"+n+".jpg"}))).then(l=>{const src=l.filter(Boolean);if(src.length)arts.forEach(a=>mkSlides(a,src,k,my))})})}
 function renderGrid(){E("#grid",P.filter(p=>!p.addon&&!p.off).map(p=>{const cs=!!p.cs;return `<a class="card${cs?" soon":""}" href="product.html?id=${p.id}"><div class="art" data-pid="${p.id}" style="background:${BG[p.id]}">${pic(p.id)}</div><div class="tags"><span class="tag ${p.t=="Digital"?"dg":""}">${p.t}</span>${cs?'<span class="tag cs">Coming soon</span>':""}</div><h3>${p.n}</h3><p>${p.s}</p><div class="p"><span class="pr">${rs(p.pr)}</span>${cs?'<span class="btn off" aria-disabled="true">COMING SOON</span>':`<span class="btn">${p.cta}</span>`}</div></a>`}).join(""));probe()}
 renderGrid();
 E("#rp",P.map(p=>`<option value="${p.id}">${p.n}</option>`).join(""));
