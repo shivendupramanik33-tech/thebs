@@ -290,4 +290,38 @@ if(/[?&]retired=1/.test(location.search)){$("#rt").hidden=false;try{history.repl
 const rock=$("#rock"),pp=document.querySelectorAll(".pp"),M=["Hi. I’m listening.","I have no advice. You’re welcome.","Your situationship could never.","Still here. Still a rock.","Please stop. Actually, don’t.","We’ve had several meetings about this."];let mi=0;
 addEventListener("pointermove",e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;rock.style.transform=`rotateY(${x*28}deg) rotateX(${-y*20}deg)`;pp.forEach(c=>{c.style.transform=`translate(${x*14}px,${y*10}px)`})});
 rock.onclick=()=>{$("#say").textContent=M[++mi%M.length]};
-</script></body></html>
+</script><script>
+  // Wait for the page to finish loading
+  window.addEventListener('load', async () => {
+    // 1. Check if someone is already logged in
+    // NOTE: Replace 'supabase' below if your variable is named something else (like 'supabaseClient' or '_supabase')
+    const { data: { session } } = await supabase.auth.getSession();
+
+    // If they ARE logged in, stop here (don't show the pop-up)
+    if (session) return;
+
+    // 2. If they are NOT logged in, set up the Google pop-up
+    window.google.accounts.id.initialize({
+      client_id: '846356358789-vaf4ulrd0datcfdrlaa198rjqi3n90fe.apps.googleusercontent.com',
+      use_fedcm_for_prompt: true,
+      callback: async (response) => {
+        // Send the Google login to Supabase
+        const { error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: response.credential,
+        });
+
+        if (!error) {
+          // Refresh the page so your "Login" button changes to "Signout"
+          window.location.reload();
+        } else {
+          alert('Login failed: ' + error.message);
+        }
+      }
+    });
+
+    // 3. Show the pop-up!
+    window.google.accounts.id.prompt();
+  });
+</script>
+</body></html>
