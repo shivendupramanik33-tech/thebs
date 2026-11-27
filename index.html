@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><script src="https://google.com" async defer></script>
+<html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BOOLEEAN — The internet’s most unnecessary store</title>
 <meta name="description" content="Emotional support rocks, joke certificates and other things nobody needs. BOOLEEAN is the internet’s most unnecessary store.">
@@ -290,38 +290,68 @@ if(/[?&]retired=1/.test(location.search)){$("#rt").hidden=false;try{history.repl
 const rock=$("#rock"),pp=document.querySelectorAll(".pp"),M=["Hi. I’m listening.","I have no advice. You’re welcome.","Your situationship could never.","Still here. Still a rock.","Please stop. Actually, don’t.","We’ve had several meetings about this."];let mi=0;
 addEventListener("pointermove",e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;rock.style.transform=`rotateY(${x*28}deg) rotateX(${-y*20}deg)`;pp.forEach(c=>{c.style.transform=`translate(${x*14}px,${y*10}px)`})});
 rock.onclick=()=>{$("#say").textContent=M[++mi%M.length]};
-</script><script>
-  // Wait for the page to finish loading
-  window.addEventListener('load', async () => {
-    // 1. Check if someone is already logged in
-    // NOTE: Replace 'supabase' below if your variable is named something else (like 'supabaseClient' or '_supabase')
-    const { data: { session } } = await supabase.auth.getSession();
+</script> <!-- ===== BOOLEEAN Google One Tap login ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+  const SUPABASE_URL = 'https://ttaqayskweukbkvxoqds.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_UEfCsepDNdjpgx5TDd-9ew_soricS9Y';
+  const GOOGLE_CLIENT_ID = '846356358789-vaf4ulrd0datcfdrlaa198rjqi3n90fe.apps.googleusercontent.com';
 
-    // If they ARE logged in, stop here (don't show the pop-up)
-    if (session) return;
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // 2. If they are NOT logged in, set up the Google pop-up
-    window.google.accounts.id.initialize({
-      client_id: '846356358789-vaf4ulrd0datcfdrlaa198rjqi3n90fe.apps.googleusercontent.com',
-      use_fedcm_for_prompt: true,
+  function toast(text) {
+    const t = document.createElement('div');
+    t.textContent = text;
+    t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 20px;border-radius:8px;z-index:99999;font-family:sans-serif;font-size:14px';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  async function generateNonce() {
+    const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(nonce));
+    const hashed = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    return [nonce, hashed];
+  }
+
+  async function initOneTap() {
+    const { data } = await sb.auth.getSession();
+    if (data.session) return;
+
+    const [nonce, hashedNonce] = await generateNonce();
+
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
       callback: async (response) => {
-        // Send the Google login to Supabase
-        const { error } = await supabase.auth.signInWithIdToken({
+        const { data, error } = await sb.auth.signInWithIdToken({
           provider: 'google',
           token: response.credential,
+          nonce: nonce,
         });
-
-        if (!error) {
-          // Refresh the page so your "Login" button changes to "Signout"
-          window.location.reload();
+        if (error) {
+          console.error(error);
+          toast('Login failed: ' + error.message);
         } else {
-          alert('Login failed: ' + error.message);
+          toast('Logged in as ' + data.user.email);
         }
-      }
+      },
+      nonce: hashedNonce,
+      use_fedcm_for_prompt: true,
+      cancel_on_tap_outside: false,
     });
 
-    // 3. Show the pop-up!
-    window.google.accounts.id.prompt();
+    google.accounts.id.prompt();
+  }
+
+  window.addEventListener('load', () => {
+    const wait = setInterval(() => {
+      if (window.google && google.accounts) {
+        clearInterval(wait);
+        initOneTap();
+      }
+    }, 100);
   });
 </script>
+<!-- ===== end Google One Tap ===== -->
 </body></html>
